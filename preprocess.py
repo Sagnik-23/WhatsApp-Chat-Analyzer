@@ -8,7 +8,15 @@ def preprocess(data):
     dates = [d.replace('\u202f', ' ') for d in dates]
 
     df = pd.DataFrame({'date': dates, 'message': messages})
-    df['date'] = pd.to_datetime(df['date'], format="%m/%d/%y, %I:%M %p - ")
+    def parse_datetime(dt):
+        try:
+            return pd.to_datetime(dt, format="%d/%m/%Y, %H:%M - ")
+        except:
+            try:
+                return pd.to_datetime(dt, format="%d/%m/%Y, %I:%M %p - ")
+            except:
+                return pd.NaT
+    df['date'] = df['date'].apply(parse_datetime)
     users= []
     messages = []
     for message in df['message']:
